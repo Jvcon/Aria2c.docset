@@ -1,0 +1,17 @@
+{
+  "name": "Aria2c",
+  "package": "Aria2c",
+  "index": "aria2c.html",
+  "externalURL": "https://aria2.github.io/manual/en/html/aria2c.html",
+  "selectors": {
+    "h2": {
+      "type": "Category"
+    },
+    "div#options h3": {
+      "type": "Option"
+    }
+  },
+  "ignore": [],
+  "icon32x32": "icons.png",
+  "allowJS": true
+}
