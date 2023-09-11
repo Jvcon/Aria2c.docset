@@ -25,7 +25,7 @@ jobs:
           go install github.com/technosophos/dashing@latest
       - name: Download source
         run: |
-          curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' -O aria2c.html
+          curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' > aria2c.html
       - name: Build Docset
         run: |
           dashing build
