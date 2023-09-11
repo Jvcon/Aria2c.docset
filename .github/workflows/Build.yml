@@ -1,0 +1,91 @@
+name: Build Docset
+on:
+  workflow_dispatch:
+    inputs:
+      new:
+        description: "Is it new version?(set 'false' if not)"
+        required: true
+        type: string
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ">=1.4"
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install Dashing
+        run: |
+          go version
+          go install github.com/technosophos/dashing@latest
+      - name: Download source
+        run: |
+          curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' -O aria2c.html
+      - name: Build Docset
+        run: |
+          dashing build
+      - name: Compress Docset
+        uses: TheDoctor0/zip-release@0.7.1
+        with:
+          type: "tar"
+          filename: "Aria2c.tgz"
+          directory: ${{ github.workspace }}
+          path: Aria2c.docset
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ inputs.new }}
+      - name: Update Release
+        uses: softprops/action-gh-release@v0.1.15
+        id: update_release
+        if: ${{ inputs.new == false}}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.previous_version }}
+          files: |
+            Aria2c.tgz
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: New Release
+        uses: softprops/action-gh-release@v0.1.15
+        id: upload_release
+        if: ${{ inputs.new }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_version }}
+          files: |
+            Aria2c.tgz
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Update xml
+        uses: Mudlet/xmlstarlet-action@v1.1
+        id: xml_us
+        with:
+          args: ed -L --update "/entry/url" -v ${{ fromJSON(steps.upload_release.outputs.assets)[0].browser_download_url }} "Aria2c.xml"
+      - name: Update xml version
+        uses: Mudlet/xmlstarlet-action@v1.1
+        id: xml_us_ver
+        with:
+          args: ed -L --update "/entry/version" -v ${{ steps.tag_version.outputs.new_version }} "Aria2c.xml"
+      - name: Update package.json
+        uses: RadovanPelka/github-action-json@main
+        if: ${{ inputs.new }}
+        with:
+          path: "package.json"
+          replaceWith: |
+            {
+              "version": "${{ steps.tag_version.outputs.new_version }}"
+            }
+      - name: Add & Commit
+        uses: EndBug/add-and-commit@v9.1.3
+        if: ${{ inputs.new }}
+        with:
+          message: "feat: update Aria2c.xml"
+          committer_name: GitHub Actions
+          committer_email: 41898282+github-actions[bot]@users.noreply.github.com
+          add: '["package.json","Aria2c.xml"]'

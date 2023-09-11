@@ -13,6 +13,7 @@ BASE_DIR=$(
 
 Output_DIR=$BASE_DIR/output
 TAR_DIR=$DOCSET_DIR/Aria2c.docset
+SRC=$BASE_DIR/aria2c.html
 
 rm -rf $Output_DIR
 mkdir $Output_DIR
@@ -30,8 +31,12 @@ if ! [ -x "$(command -v curl)" ]; then
 fi
 
 go install github.com/technosophos/dashing@latest
-
-curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' -O aria2c.html
+if test -f "$SRC"; then
+    rm aria2c.html
+    curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' -O aria2c.html
+else
+    curl 'https://raw.githubusercontent.com/aria2/aria2.github.io/master/manual/en/html/aria2c.html' -O aria2c.html
+fi
 
 dashing build
 

@@ -8,3 +8,14 @@ aria2c.html
 .env.test.local
 .env.production.local
 .env.local
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+package-lock.json

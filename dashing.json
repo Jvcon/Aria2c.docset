@@ -5,10 +5,35 @@
   "externalURL": "https://aria2.github.io/manual/en/html/aria2c.html",
   "selectors": {
     "h2": {
-      "type": "Category"
+      "type": "Category",
+      "requiretext": "OPTIONS|EXIT STATUS|ENVIRONMENT|FILES|RPC INTERFACE|MISC|EXAMPLE",
+      "regexp": "¶",
+      "replacement": ""
     },
     "div#options h3": {
-      "type": "Option"
+      "type": "Section",
+      "regexp": "¶",
+      "replacement": ""
+    },
+    "div#options code.sig-name.descname": {
+      "type": "Option",
+      "regexp": "¶",
+      "replacement": ""
+    },
+    "div#files h3": {
+      "type": "File",
+      "regexp": "¶",
+      "replacement": ""
+    },
+    "dl.py.function dt code.sig-name.descname": {
+      "type": "Method",
+      "regexp": "¶",
+      "replacement": ""
+    },
+    "div#example h4": {
+      "type": "Sample",
+      "regexp": "¶",
+      "replacement": ""
     }
   },
   "ignore": [],
